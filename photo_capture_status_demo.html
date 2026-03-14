@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Photo Capture - Dr. Shroff Charity Eye Hospital</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      display: flex;
+      margin: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: #f4f7fc;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 240px;
+      background: #ffffff;
+      border-right: 2px solid #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .sidebar-header {
+      padding: 15px;
+      background: #007bff;
+      color: white;
+      font-weight: bold;
+      text-align: center;
+      font-size: 16px;
+    }
+
+    .preview-list {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 10px;
+    }
+
+    .main {
+      flex-grow: 1;
+      padding: 20px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-y: auto;
+    }
+
+    .hospital-header {
+      color: #007bff;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .camera-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    video, canvas {
+      border: 4px solid #007bff;
+      border-radius: 10px;
+      box-shadow: 0 8px 16px rgba(0,123,255,0.2);
+      margin-bottom: 15px;
+      max-width: 100%;
+      height: auto;
+    }
+
+    video {
+      width: 100%;
+      max-width: 640px;
+      height: auto;
+    }
+
+    .button-group {
+      margin: 15px 0;
+    }
+
+    button {
+      padding: 12px 24px;
+      margin: 5px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+    }
+
+    .capture-btn {
+      background-color: #007bff;
+      color: white;
+      font-size: 18px;
+      padding: 15px 30px;
+    }
+
+    .capture-btn:hover:not(:disabled) {
+      background-color: #0056b3;
+      transform: translateY(-2px);
+    }
+
+    .capture-btn:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+
+    .thumb {
+      margin-bottom: 20px;
+      text-align: center;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 10px;
+      background: white;
+    }
+
+    .thumb img {
+      width: 100%;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+    }
+
+    .status {
+      font-size: 13px;
+      margin: 8px 0;
+      font-weight: bold;
+    }
+
+    .not-uploaded {
+      color: #ff9800;
+    }
+
+    .uploading {
+      color: #007bff;
+    }
+
+    .uploaded {
+      color: #4caf50;
+    }
+
+    .failed {
+      color: #f44336;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 5px;
+      justify-content: center;
+    }
+
+    .btn-group button {
+      width: 70px;
+      padding: 8px;
+      font-size: 12px;
+      margin: 0;
+    }
+
+    .upload-btn {
+      background-color: #4caf50;
+      color: white;
+    }
+
+    .save-btn {
+      background-color: #ff9800;
+      color: white;
+    }
+
+    .retry-btn {
+      background-color: #f44336;
+      color: white;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #333;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      animation: slideIn 0.3s ease;
+      z-index: 1000;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        height: 200px;
+        border-right: none;
+        border-bottom: 2px solid #e0e0e0;
+      }
+
+      .preview-list {
+        display: flex;
+        overflow-x: auto;
+        padding: 10px;
+      }
+
+      .thumb {
+        min-width: 150px;
+        margin-right: 10px;
+        margin-bottom: 0;
+      }
+
+      .hospital-header {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-header">
+    📸 Captured Photos
+  </div>
+  <div class="preview-list" id="previewList">
+    <!-- Thumbnails will appear here -->
+  </div>
+</div>
+
+<div class="main">
+  <h2 class="hospital-header">🏥 DR. SHROFF CHARITY EYE HOSPITAL</h2>
+
+  <div class="camera-container">
+    <video id="video" autoplay playsinline></video>
+  </div>
+  
+  <div class="button-group">
+    <button class="capture-btn" id="captureBtn" onclick="capturePhoto()">📸 CAPTURE PHOTO</button>
+  </div>
+
+  <canvas id="canvas" width="640" height="520" style="display:none;"></canvas>
+</div>
+
+<script>
+  const video = document.getElementById('video');
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const previewList = document.getElementById('previewList');
+  const captureBtn = document.getElementById('captureBtn');
+
+  let latitude = "Not Available";
+  let longitude = "Not Available";
+  let cameraStream = null;
+
+  // Show toast notification
+  function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.style.backgroundColor = type === 'success' ? '#4caf50' : 
+                                 type === 'error' ? '#f44336' : '#333';
+    toast.innerText = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+      toast.remove();
+    }, 3000);
+  }
+
+  // Initialize camera
+  async function initCamera() {
+    try {
+      captureBtn.disabled = true;
+      cameraStream = await navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          width: { ideal: 640 },
+          height: { ideal: 480 },
+          facingMode: 'environment'
+        } 
+      });
+      video.srcObject = cameraStream;
+      captureBtn.disabled = false;
+      showToast('Camera ready!', 'success');
+    } catch (err) {
+      alert("Camera access error: " + err.message);
+      showToast('Camera access failed!', 'error');
+    }
+  }
+
+  // Get location
+  if ("geolocation" in navigator) {
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        latitude = pos.coords.latitude.toFixed(6);
+        longitude = pos.coords.longitude.toFixed(6);
+        showToast('Location captured!', 'success');
+      }, 
+      err => {
+        console.warn("Location Error:", err.message);
+        showToast('Location not available', 'error');
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0
+      }
+    );
+  }
+
+  // Initialize camera on load
+  initCamera();
+
+  // Cleanup on page unload
+  window.addEventListener('beforeunload', () => {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+    }
+  });
+
+  function getTimestamp() {
+    const now = new Date();
+    return new Intl.DateTimeFormat('en-IN', {
+      timeZone: 'Asia/Kolkata',
+      year: 'numeric', 
+      month: '2-digit', 
+      day: '2-digit',
+      hour: '2-digit', 
+      minute: '2-digit', 
+      second: '2-digit',
+      hour12: false
+    }).format(now).replace(/[\/: ]/g, "_").replace(/,/g, "");
+  }
+
+  function getDisplayTimestamp() {
+    const now = new Date();
+    return new Intl.DateTimeFormat('en-IN', {
+      timeZone: 'Asia/Kolkata',
+      year: 'numeric', 
+      month: '2-digit', 
+      day: '2-digit',
+      hour: '2-digit', 
+      minute: '2-digit', 
+      second: '2-digit',
+      hour12: false
+    }).format(now).replace(/,/g, "");
+  }
+
+  function capturePhoto() {
+    // Set canvas dimensions
+    canvas.width = video.videoWidth || 640;
+    canvas.height = (video.videoHeight || 480) + 100;
+    
+    // Draw video frame
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height - 100);
+
+    // Draw overlay with hospital info
+    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+    ctx.fillRect(0, canvas.height - 100, canvas.width, 100);
+
+    ctx.fillStyle = "#fff";
+    ctx.font = "bold 16px Arial";
+    ctx.fillText("Dr. Shroff Charity Eye Hospital", 10, canvas.height - 75);
+    ctx.font = "14px Arial";
+    ctx.fillText("📍 5027, Kadarnath Road, Daryaganj, Delhi - 110002", 10, canvas.height - 50);
+    ctx.fillText(`📅 ${getDisplayTimestamp()} IST`, 10, canvas.height - 25);
+    ctx.fillText(`📍 ${latitude}, ${longitude}`, 10, canvas.height - 5);
+
+    // Convert Canvas to JPEG
+    const imageData = canvas.toDataURL("image/jpeg", 0.95);
+    const filename = "Photo_" + getTimestamp() + ".jpg";
+
+    createThumbnail(imageData, filename);
+    showToast('Photo captured!', 'success');
+  }
+
+  function createThumbnail(imageData, filename) {
+    const div = document.createElement("div");
+    div.className = "thumb";
+
+    const img = document.createElement("img");
+    img.src = imageData;
+    div.appendChild(img);
+
+    const status = document.createElement("div");
+    status.className = "status not-uploaded";
+    status.innerText = "⏳ Not Uploaded";
+    div.appendChild(status);
+
+    const btnGroup = document.createElement("div");
+    btnGroup.className = "btn-group";
+
+    // Upload button
+    const uploadBtn = document.createElement("button");
+    uploadBtn.className = "upload-btn";
+    uploadBtn.innerText = "Upload";
+    uploadBtn.onclick = () => uploadPhoto(imageData, filename, status, uploadBtn, saveBtn);
+
+    // Save button
+    const saveBtn = document.createElement("button");
+    saveBtn.className = "save-btn";
+    saveBtn.innerText = "Save";
+    saveBtn.onclick = () => {
+      const link = document.createElement("a");
+      link.href = imageData;
+      link.download = filename;
+      link.click();
+      showToast('Photo saved!', 'success');
+    };
+
+    btnGroup.appendChild(uploadBtn);
+    btnGroup.appendChild(saveBtn);
+    div.appendChild(btnGroup);
+    
+    previewList.prepend(div);
+
+    // Save to localStorage as backup
+    saveToLocalStorage(imageData, filename);
+  }
+
+  function uploadPhoto(imageData, filename, statusEl, uploadBtn, saveBtn) {
+    const locationName = prompt("Enter Location/Room Name:", "OPD Room");
+    if (!locationName) {
+      alert("Upload cancelled. Location name is required.");
+      return;
+    }
+
+    // Update UI for uploading state
+    statusEl.innerText = "⏳ Uploading...";
+    statusEl.className = "status uploading";
+    uploadBtn.disabled = true;
+    saveBtn.disabled = true;
+
+    // Convert base64 to blob
+    fetch(imageData)
+      .then(res => res.blob())
+      .then(blob => {
+        const formData = new FormData();
+        formData.append("photo", blob, filename);
+        formData.append("location", locationName);
+        formData.append("latitude", latitude);
+        formData.append("longitude", longitude);
+        formData.append("timestamp", new Date().toISOString());
+
+        // Simulate upload (replace with actual API endpoint)
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve("Upload successful");
+          }, 1500);
+        });
+      })
+      .then(msg => {
+        statusEl.innerText = "✅ Uploaded to server";
+        statusEl.className = "status uploaded";
+        uploadBtn.disabled = false;
+        saveBtn.disabled = false;
+        showToast('Upload successful!', 'success');
+        
+        // Remove from localStorage after successful upload
+        removeFromLocalStorage(filename);
+      })
+      .catch(err => {
+        statusEl.innerText = "❌ Upload Failed";
+        statusEl.className = "status failed";
+        uploadBtn.disabled = false;
+        saveBtn.disabled = false;
+        showToast('Upload failed!', 'error');
+        console.error(err);
+
+        // Add retry button
+        const retryBtn = document.createElement("button");
+        retryBtn.className = "retry-btn";
+        retryBtn.innerText = "Retry";
+        retryBtn.onclick = () => uploadPhoto(imageData, filename, statusEl, uploadBtn, saveBtn);
+        
+        const btnGroup = statusEl.parentElement.querySelector('.btn-group');
+        if (!btnGroup.querySelector('.retry-btn')) {
+          btnGroup.appendChild(retryBtn);
+        }
+      });
+  }
+
+  // Save to localStorage as backup
+  function saveToLocalStorage(imageData, filename) {
+    const photos = JSON.parse(localStorage.getItem('capturedPhotos') || '[]');
+    photos.push({
+      filename: filename,
+      imageData: imageData,
+      timestamp: new Date().toISOString()
+    });
+    
+    // Keep only last 20 photos
+    if (photos.length > 20) {
+      photos.shift();
+    }
+    
+    localStorage.setItem('capturedPhotos', JSON.stringify(photos));
+  }
+
+  function removeFromLocalStorage(filename) {
+    const photos = JSON.parse(localStorage.getItem('capturedPhotos') || '[]');
+    const updatedPhotos = photos.filter(p => p.filename !== filename);
+    localStorage.setItem('capturedPhotos', JSON.stringify(updatedPhotos));
+  }
+
+  // Load photos from localStorage on page load
+  function loadFromLocalStorage() {
+    const photos = JSON.parse(localStorage.getItem('capturedPhotos') || '[]');
+    photos.reverse().forEach(photo => {
+      createThumbnail(photo.imageData, photo.filename);
+    });
+  }
+
+  // Load saved photos
+  loadFromLocalStorage();
+
+  // Handle camera errors
+  video.addEventListener('error', (err) => {
+    console.error('Video error:', err);
+    showToast('Camera error!', 'error');
+  });
+
+</script>
+
+</body>
+</html>
