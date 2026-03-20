@@ -21,18 +21,18 @@
       height: auto;
     }
 
-    /* responsive layout: on mobile, sidebar becomes bottom thumbnail strip */
     .app-container {
       display: flex;
       flex: 1;
       flex-direction: row;
       min-height: 0;
       width: 100%;
+      gap: 0;
     }
 
     /* Sidebar - Thumbnail panel */
     .sidebar {
-      width: 220px;
+      width: 240px;
       background: #ffffff;
       border-right: 1px solid rgba(0,0,0,0.1);
       overflow-y: auto;
@@ -41,10 +41,9 @@
       flex-direction: column;
       gap: 18px;
       box-shadow: 2px 0 8px rgba(0,0,0,0.02);
-      transition: all 0.2s ease;
     }
 
-    /* Main capture area */
+    /* Main capture area - FULLY RESPONSIVE */
     .main {
       flex: 1;
       padding: 20px 24px;
@@ -53,33 +52,29 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 16px;
+      gap: 20px;
       background: #f8fafc;
+      min-width: 0;
     }
 
     h2 {
       color: #1a3e60;
-      font-size: clamp(1.2rem, 5vw, 1.8rem);
+      font-size: clamp(1rem, 4vw, 1.6rem);
       font-weight: 600;
-      letter-spacing: -0.3px;
-      margin-bottom: 4px;
-      background: linear-gradient(135deg, #1a5d8c, #0f3b52);
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
-      display: inline-block;
+      margin-bottom: 0;
     }
 
-    /* responsive video container - dynamic sizing */
-    .video-wrapper {
+    /* VIDEO CONTAINER - FULLY RESPONSIVE FRAME */
+    .video-container {
       width: 100%;
       max-width: 100%;
       display: flex;
       justify-content: center;
+      align-items: center;
+      background: #0a0a0a;
       border-radius: 24px;
-      background: #000;
-      padding: 6px;
-      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.25);
+      padding: 8px;
+      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.3);
     }
 
     video {
@@ -90,9 +85,10 @@
       background-color: #000;
       display: block;
       object-fit: cover;
-      aspect-ratio: 4 / 3;
       border: 3px solid white;
       box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+      /* DYNAMIC ASPECT RATIO - maintains 4:3 but fills container */
+      aspect-ratio: 4 / 3;
     }
 
     canvas {
@@ -102,8 +98,8 @@
     .capture-btn {
       background: linear-gradient(95deg, #0077b6, #023e8a);
       color: white;
-      padding: 14px 28px;
-      font-size: 1.2rem;
+      padding: 14px 32px;
+      font-size: clamp(1rem, 4vw, 1.2rem);
       font-weight: bold;
       border: none;
       border-radius: 60px;
@@ -111,24 +107,22 @@
       box-shadow: 0 8px 20px rgba(0,119,182,0.3);
       transition: transform 0.1s ease, box-shadow 0.2s;
       width: auto;
-      min-width: 200px;
+      min-width: 180px;
       letter-spacing: 1px;
     }
 
     .capture-btn:active {
       transform: scale(0.97);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
 
-    /* thumbnails styling */
+    /* Thumbnail Styles */
     .thumb {
       background: #fff;
       border-radius: 20px;
       overflow: hidden;
-      box-shadow: 0 8px 18px rgba(0,0,0,0.05);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.08);
       transition: all 0.2s;
       border: 1px solid #e9ecef;
-      margin-bottom: 4px;
     }
 
     .thumb img {
@@ -144,7 +138,6 @@
       font-weight: 600;
       text-align: center;
       padding: 8px 6px 4px;
-      letter-spacing: 0.3px;
     }
 
     .not-uploaded {
@@ -174,7 +167,6 @@
       background: #f1f5f9;
       cursor: pointer;
       transition: all 0.2s;
-      color: #1e293b;
     }
 
     .btn-group button:first-child {
@@ -182,20 +174,11 @@
       color: white;
     }
 
-    .btn-group button:first-child:active {
-      background: #0f5a34;
-    }
-
     .btn-group button:last-child {
       background: #334155;
       color: white;
     }
 
-    .btn-group button:last-child:active {
-      background: #1e293b;
-    }
-
-    /* Empty sidebar hint */
     .sidebar:empty::before {
       content: "📸 Captured photos will appear here";
       font-size: 13px;
@@ -203,10 +186,9 @@
       text-align: center;
       display: block;
       padding: 20px 10px;
-      font-style: italic;
     }
 
-    /* 📱 RESPONSIVE: on screens below 760px -> vertical stacking, sidebar becomes horizontal strip at bottom */
+    /* 📱 RESPONSIVE: Mobile Layout */
     @media (max-width: 760px) {
       .app-container {
         flex-direction: column;
@@ -221,86 +203,90 @@
         border-top: 1px solid #e2e8f0;
         padding: 12px 16px;
         gap: 16px;
-        background: #ffffffcc;
-        backdrop-filter: blur(2px);
-        scrollbar-width: thin;
-        min-height: 160px;
+        min-height: 150px;
         order: 2;
       }
 
       .main {
         order: 1;
-        padding: 18px 16px;
+        padding: 16px;
       }
 
       .thumb {
-        min-width: 130px;
-        width: 130px;
+        min-width: 120px;
+        width: 120px;
         flex-shrink: 0;
-        margin-bottom: 0;
       }
 
       .thumb img {
         aspect-ratio: 4/3;
-        width: 100%;
-      }
-
-      .status {
-        font-size: 9px;
-        padding: 4px 4px;
-      }
-
-      .btn-group {
-        padding: 6px 6px 8px;
-        gap: 5px;
       }
 
       .btn-group button {
         font-size: 10px;
-        padding: 5px 0;
+        padding: 6px 0;
       }
 
       .capture-btn {
         padding: 12px 24px;
-        font-size: 1rem;
-        min-width: 170px;
+        min-width: 160px;
       }
 
-      h2 {
-        font-size: 1.4rem;
+      /* VIDEO FRAME on mobile - fills width perfectly */
+      .video-container {
+        padding: 6px;
+      }
+      
+      video {
+        aspect-ratio: 4 / 3;
+        width: 100%;
       }
     }
 
-    /* For extra small devices (<=480px) */
+    /* For very small phones */
     @media (max-width: 480px) {
       .main {
-        padding: 14px 12px;
+        padding: 12px;
       }
+      
       .thumb {
-        min-width: 115px;
-        width: 115px;
+        min-width: 105px;
+        width: 105px;
       }
+      
       .capture-btn {
         padding: 10px 20px;
         font-size: 0.9rem;
       }
+      
+      h2 {
+        font-size: 1.2rem;
+      }
     }
 
-    /* For landscape orientation on mobile: keep usability */
-    @media (max-height: 500px) and (orientation: landscape) {
+    /* Landscape mode on mobile */
+    @media (max-height: 550px) and (orientation: landscape) {
       .app-container {
         flex-direction: row;
       }
+      
       .sidebar {
         width: 180px;
         flex-direction: column;
         overflow-y: auto;
       }
+      
       .main {
-        padding: 10px;
+        padding: 12px;
       }
+      
       video {
-        max-height: 65vh;
+        max-height: 70vh;
+        width: auto;
+        max-width: 100%;
+      }
+      
+      .video-container {
         width: auto;
       }
     }
@@ -317,48 +303,34 @@
 </head>
 <body>
 <div class="app-container">
-  <div class="sidebar" id="previewList">
-    <!-- dynamic thumbnails will appear here (horizontal on mobile, vertical on desktop) -->
-  </div>
+  <div class="sidebar" id="previewList"></div>
   <div class="main">
     <h2>📸 DR. SHROFF CHARITY EYE HOSPITAL</h2>
-    <div class="video-wrapper">
+    <div class="video-container">
       <video id="video" autoplay playsinline muted></video>
     </div>
     <button class="capture-btn" id="captureButton">📷 Capture Photo</button>
     <canvas id="canvas" style="display:none;"></canvas>
   </div>
 </div>
-<footer>📍 5027, Kadarnath Road, Daryaganj, Delhi - 110002 | GPS enabled | Auto-adaptive UI</footer>
+<footer>📍 5027, Kadarnath Road, Daryaganj, Delhi - 110002 | GPS enabled | Auto-adjusting camera frame</footer>
 
 <script>
   (function() {
-    // DOM elements
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     const previewList = document.getElementById('previewList');
     const captureBtn = document.getElementById('captureButton');
 
-    // Location state
     let latitude = "Not Available";
     let longitude = "Not Available";
-    let lastLocationTime = 0;
-
-    // Ensure canvas dimensions are set responsively, but we maintain fixed capture canvas based on video feed actual size.
-    // We'll capture video frame at original display resolution but we will define canvas size once stream loaded.
-    // But dynamic: we set canvas to desired output size: we use video.videoWidth/video.videoHeight ratio.
-    // Better: keep canvas width=400, height=300 (capture area) plus metadata area (total height=420)
-    // But for crisp capture, we'll use video current dimensions (full quality). but UI shows responsive video.
-    // To retain readable text and consistent output, we set canvas fixed to 400x420 but we capture frame respecting video aspect.
-    // However we can draw video scaled to fit 400x300 region.
-    canvas.width = 400;
-    canvas.height = 420;   // 300 for image + 120 for text overlay
-
-    // Track if camera ready
     let cameraReady = false;
 
-    // Helper: get formatted timestamp for filename
+    // Set canvas size (fixed for consistent output quality)
+    canvas.width = 400;
+    canvas.height = 420;
+
     function getTimestamp() {
       const now = new Date();
       return new Intl.DateTimeFormat('en-IN', {
@@ -379,7 +351,6 @@
       }).format(now);
     }
 
-    // Request fresh location with high accuracy (GPS)
     function getFreshLocation(callback) {
       if (!("geolocation" in navigator)) {
         callback(false);
@@ -389,36 +360,37 @@
         (position) => {
           latitude = position.coords.latitude.toFixed(6);
           longitude = position.coords.longitude.toFixed(6);
-          lastLocationTime = Date.now();
-          console.log(`📍 Location updated: ${latitude}, ${longitude}`);
           callback(true);
         },
         (error) => {
           console.warn("Geolocation error:", error.message);
           let errorMsg = "";
           switch(error.code) {
-            case error.PERMISSION_DENIED: errorMsg = "Location permission denied. Please allow location access for accurate stamping."; break;
-            case error.POSITION_UNAVAILABLE: errorMsg = "Location unavailable. Enable GPS / High accuracy mode."; break;
-            case error.TIMEOUT: errorMsg = "Location request timeout. Check GPS signal."; break;
+            case error.PERMISSION_DENIED: 
+              errorMsg = "Location permission denied. Please allow location access."; 
+              break;
+            case error.POSITION_UNAVAILABLE: 
+              errorMsg = "Location unavailable. Enable GPS / High accuracy mode."; 
+              break;
+            case error.TIMEOUT: 
+              errorMsg = "Location request timeout."; 
+              break;
             default: errorMsg = error.message;
           }
-          alert("⚠️ Location error: " + errorMsg + "\nPhoto will still capture without GPS.");
+          alert("⚠️ " + errorMsg + "\nPhoto will capture without GPS.");
           callback(false);
         },
-        { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
     }
 
-    // Core capture logic after location optional retrieval
     function performCapture() {
-      if (!cameraReady || !video.videoWidth || video.readyState < 2) {
-        alert("Camera is not ready yet. Please wait and try again.");
+      if (!cameraReady || !video.videoWidth) {
+        alert("Camera is not ready yet. Please wait.");
         return;
       }
 
-      // Always try fresh location at capture moment (async)
-      getFreshLocation((locationSuccess) => {
-        // Even if location fails, we proceed with old or "Not Available"
+      getFreshLocation(() => {
         finalizeCaptureImage();
       });
     }
@@ -427,11 +399,9 @@
       const timestampRaw = getTimestamp();
       const displayTime = getDisplayTimestamp();
 
-      // Ensure canvas is clean and dimensions set
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
-      // Draw video frame onto canvas (top area: 0,0,400,300)
-      // Preserve aspect ratio: fit video to 400x300 while maintaining natural look.
+      // Draw video frame - maintain aspect ratio within 400x300 area
       const videoWidth = video.videoWidth;
       const videoHeight = video.videoHeight;
       let drawWidth = 400;
@@ -440,9 +410,8 @@
       
       if (videoWidth && videoHeight) {
         const videoAspect = videoWidth / videoHeight;
-        const targetAspect = 400 / 300; // 1.333
+        const targetAspect = 400 / 300;
         if (videoAspect > targetAspect) {
-          // video wider than target, fit height
           drawHeight = 300;
           drawWidth = 300 * videoAspect;
           offsetX = (400 - drawWidth) / 2;
@@ -452,38 +421,37 @@
           offsetY = (300 - drawHeight) / 2;
         }
       }
+      
       ctx.drawImage(video, offsetX, offsetY, drawWidth, drawHeight);
       
-      // Overlay metadata area (dark background)
-      ctx.fillStyle = "rgba(0, 20, 40, 0.85)";
+      // Metadata overlay
+      ctx.fillStyle = "rgba(0, 20, 40, 0.9)";
       ctx.fillRect(0, 300, canvas.width, 120);
       ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 12px 'Segoe UI', system-ui";
+      ctx.font = "bold 12px 'Segoe UI'";
       ctx.fillText("🏥 Dr. Shroff Charity Eye Hospital", 12, 322);
-      ctx.font = "11px 'Segoe UI'";
+      ctx.font = "10px 'Segoe UI'";
       ctx.fillText("📍 5027, Kadarnath Road, Daryaganj, Delhi - 110002", 12, 342);
       ctx.font = "11px monospace";
       ctx.fillText(`🕒 ${displayTime} IST`, 12, 362);
       
       let locationString = `🌐 Lat: ${latitude} | Lon: ${longitude}`;
-      if (latitude === "Not Available" && longitude === "Not Available") {
+      if (latitude === "Not Available") {
         locationString = "📍 Location: Not acquired (enable GPS)";
       }
       ctx.fillText(locationString, 12, 382);
       ctx.font = "9px italic";
-      ctx.fillText("© Clinical Photo Record | Daryaganj Unit", 12, 402);
+      ctx.fillText("Clinical Photo Record", 12, 402);
       
-      // Generate high quality JPEG
       const imageData = canvas.toDataURL("image/jpeg", 0.92);
       const filename = "HOSPITAL_PHOTO_" + timestampRaw + ".jpg";
       
-      // Create thumbnail preview card
+      // Create thumbnail
       const thumbDiv = document.createElement("div");
       thumbDiv.className = "thumb";
       
       const imgElement = document.createElement("img");
       imgElement.src = imageData;
-      imgElement.alt = "capture";
       thumbDiv.appendChild(imgElement);
       
       const statusDiv = document.createElement("div");
@@ -494,168 +462,96 @@
       const btnGroup = document.createElement("div");
       btnGroup.className = "btn-group";
       
-      // Upload button with location/room prompt
       const uploadBtn = document.createElement("button");
       uploadBtn.innerText = "☁️ Upload";
-      uploadBtn.onclick = (e) => {
-        e.stopPropagation();
-        let locationName = prompt("📍 Enter location / Room / Ward name:", "General Ward");
+      uploadBtn.onclick = () => {
+        const locationName = prompt("Enter Location/Room Name:", "General Ward");
         if (!locationName || locationName.trim() === "") {
-          alert("Upload cancelled: Location name required.");
+          alert("Location name required.");
           return;
         }
-        locationName = locationName.trim();
-        // Convert base64 to blob
         fetch(imageData)
           .then(res => res.blob())
           .then(blob => {
             const formData = new FormData();
             formData.append("photo", blob, filename);
-            formData.append("location", locationName);
-            // simulate API endpoint (if backend not ready, it will fail gracefully)
+            formData.append("location", locationName.trim());
             return fetch("/api/upload", { method: "POST", body: formData });
           })
           .then(async (response) => {
             if (response.ok) {
-              const msg = await response.text();
               statusDiv.innerText = "✅ Uploaded to server";
               statusDiv.classList.remove("not-uploaded");
               statusDiv.classList.add("uploaded");
-              console.log("Server response:", msg);
             } else {
               throw new Error(`HTTP ${response.status}`);
             }
           })
           .catch(err => {
             console.error("Upload error:", err);
-            statusDiv.innerText = "❌ Upload Failed (offline?)";
-            statusDiv.classList.remove("not-uploaded");
+            statusDiv.innerText = "❌ Upload Failed";
             statusDiv.style.background = "#ffe6e5";
             statusDiv.style.color = "#b91c1c";
-            alert("Upload failed. Check network or backend API. Image saved locally.");
+            alert("Upload failed. Image saved locally.");
           });
       };
       
-      // Save to device (download)
       const saveBtn = document.createElement("button");
       saveBtn.innerText = "💾 Save";
-      saveBtn.onclick = (e) => {
-        e.stopPropagation();
+      saveBtn.onclick = () => {
         const link = document.createElement("a");
         link.href = imageData;
         link.download = filename;
         link.click();
-        statusDiv.innerText = "📁 Saved locally";
+        statusDiv.innerText = "📁 Saved";
         setTimeout(() => {
-          if (statusDiv.innerText === "📁 Saved locally" && !statusDiv.classList.contains("uploaded")) {
+          if (!statusDiv.classList.contains("uploaded")) {
             statusDiv.innerText = "⏳ Not Uploaded";
           }
-        }, 1800);
+        }, 1500);
       };
       
       btnGroup.appendChild(uploadBtn);
       btnGroup.appendChild(saveBtn);
       thumbDiv.appendChild(btnGroup);
       
-      // Prepend to sidebar (newest on top)
       previewList.prepend(thumbDiv);
       
-      // small auto-scroll effect on mobile (sidebar horizontal)
+      // Auto-scroll on mobile
       if (window.innerWidth <= 760) {
         setTimeout(() => {
-          if (previewList.scrollWidth > previewList.clientWidth) {
-            previewList.scrollLeft = 0;
-          }
+          previewList.scrollLeft = 0;
         }, 50);
       }
     }
     
-    // Camera initialization with back camera "environment" preference, also adapts to screen
+    // Camera initialization with back camera
     function initCamera() {
-      const constraints = {
-        video: {
-          facingMode: { exact: "environment" },  // back camera prefer
-          width: { ideal: window.innerWidth > 800 ? 1280 : 720 },
-          height: { ideal: window.innerHeight > 600 ? 720 : 480 }
-        }
-      };
-      
-      // Fallback if environment fails
-      navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+      navigator.mediaDevices.getUserMedia({ 
+        video: { facingMode: { exact: "environment" } } 
+      })
         .then(stream => {
           video.srcObject = stream;
           return stream;
         })
-        .catch(err => {
-          console.warn("Back camera failed, trying any camera:", err);
-          // fallback to default camera
+        .catch(() => {
           return navigator.mediaDevices.getUserMedia({ video: true });
         })
         .then(stream => {
           if (stream && !video.srcObject) video.srcObject = stream;
           video.setAttribute("playsinline", true);
-          video.play().catch(e => console.log("autoplay blocked", e));
+          video.play();
           video.onloadedmetadata = () => {
             cameraReady = true;
-            // optional: adjust canvas ratio? No needed.
-            console.log(`Camera ready: ${video.videoWidth}x${video.videoHeight}`);
+            console.log("Camera ready");
           };
         })
-        .catch(finalErr => {
-          console.error("Camera access error", finalErr);
-          alert("Camera access denied or not available.\nPlease allow camera permissions and refresh.\nIf on browser, use HTTPS or localhost.");
+        .catch(err => {
+          alert("Camera access denied. Please allow camera permissions.");
         });
     }
     
-    // Watch for visibility and resize to keep camera stream alive and responsive UI
-    window.addEventListener('resize', () => {
-      // just reflow, no camera reinit needed. sidebar layout adapts via CSS
-      if (window.innerWidth <= 760) {
-        previewList.style.flexDirection = "row";
-      } else {
-        previewList.style.flexDirection = "column";
-      }
-    });
-    
-    // trigger location prefetch once when page loads (optional)
-    function warmUpLocation() {
-      if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            latitude = pos.coords.latitude.toFixed(6);
-            longitude = pos.coords.longitude.toFixed(6);
-            console.log("Initial location lock:", latitude, longitude);
-          },
-          (err) => { console.log("initial location skip:", err.message); },
-          { enableHighAccuracy: true, timeout: 8000 }
-        );
-      }
-    }
-    
-    // manual capture button event with loading prevention
-    captureBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (!cameraReady) {
-        alert("Camera is initializing. Please wait a moment.");
-        return;
-      }
-      performCapture();
-    });
-    
-    // Initialize everything
-    initCamera();
-    warmUpLocation();
-    
-    // Additional orientation fix: force video dimensions fluid
-    window.addEventListener('orientationchange', () => {
-      setTimeout(() => {
-        if (video.videoWidth && video.videoHeight) {
-          // just re-center, no reinit needed
-        }
-      }, 100);
-    });
-    
-    // Sidebar layout direction based on width
+    // Update sidebar orientation based on screen width
     function updateSidebarOrientation() {
       if (window.innerWidth <= 760) {
         previewList.style.flexDirection = "row";
@@ -665,13 +561,11 @@
         previewList.style.flexWrap = "wrap";
       }
     }
+    
+    captureBtn.addEventListener('click', performCapture);
+    initCamera();
     updateSidebarOrientation();
     window.addEventListener('resize', updateSidebarOrientation);
-    
-    // Ensure that any click on thumbnail buttons doesn't cause issues
-    document.addEventListener('click', function(e) {
-      // just for better UX, no extra
-    });
   })();
 </script>
 </body>
